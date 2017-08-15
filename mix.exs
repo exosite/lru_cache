@@ -8,11 +8,11 @@ defmodule LruCache.Mixfile do
      elixir: "~> 1.2-dev",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps,
+     deps: deps(),
      name: "LRU Cache",
      source_url: @github,
-     description: description,
-     package: package]
+     description: description(),
+     package: package()]
   end
 
   def application do
