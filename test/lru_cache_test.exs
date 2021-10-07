@@ -99,4 +99,10 @@ defmodule LruCacheTest do
     LruCache.put(:test8, 6, "test 6")
     assert nil == LruCache.get(:test8, 1, false)
   end
+
+  test "lru supervised" do
+    assert {:ok, _} = start_supervised({LruCache, [:test9, 10]})
+    LruCache.put(:test9, :a, 1)
+    assert 1 = LruCache.get(:test9, :a)
+  end
 end

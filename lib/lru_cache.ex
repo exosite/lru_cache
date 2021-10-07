@@ -31,7 +31,17 @@ defmodule LruCache do
   Creates an LRU of the given size as part of a supervision tree with a registered name
   """
   def start_link(name, size) do
-    Agent.start_link(__MODULE__, :init, [name, size], [name: name])
+    start_link([name, size])
+  end
+
+  def start_link([name, size]) do
+    Agent.start_link(
+      fn ->
+        {:ok, pid} = init([name, size])
+        pid
+      end,
+      name: name
+    )
   end
 
   @doc """
@@ -72,11 +82,11 @@ defmodule LruCache do
   def delete(name, key), do: Agent.get(name, __MODULE__, :handle_delete, [key])
 
   @doc false
-  def init(name, size) do
+  def init([name, size]) do
     ttl_table = :"#{name}_ttl"
     :ets.new(ttl_table, [:named_table, :ordered_set])
     :ets.new(name, [:named_table, :public, {:read_concurrency, true}])
-    %LruCache{ttl_table: ttl_table, table: name, size: size}
+    {:ok, %LruCache{ttl_table: ttl_table, table: name, size: size}}
   end
 
   @doc false
